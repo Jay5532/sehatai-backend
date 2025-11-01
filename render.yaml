@@ -2,9 +2,9 @@ services:
   - type: web
     name: sehatai-backend
     env: node
+    buildCommand: npm install
+    startCommand: node index.js
     rootDir: server
-    buildCommand: cd server && npm install
-    startCommand: cd server && node index.js
     envVars:
       - key: PORT
         value: 5000
