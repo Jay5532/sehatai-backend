@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import fetch from "node-fetch";
 
 dotenv.config();
 
@@ -13,21 +12,21 @@ app.get("/", (req, res) => {
   res.send("✅ SehatAI backend is live and reachable!");
 });
 
-// POST /chat endpoint
 app.post("/chat", async (req, res) => {
   try {
     const { messages, language } = req.body;
 
-    // simple debug to confirm it’s receiving
-    console.log("🧠 Incoming chat:", messages, language);
+    console.log("🧠 Received from frontend:", messages, language);
 
-    // send a dummy reply for now (you can plug Groq/OpenAI later)
+    // Temporary dummy reply for testing
     res.json({
-      reply: `SehatAI says hello! You said: "${messages[0].content}"`,
+      reply: `SehatAI says hello! You said: "${messages?.[0]?.content || "nothing"}"`,
     });
   } catch (error) {
     console.error("Chat error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({
+      reply: "⚠️ SehatAI is temporarily offline. Please try again in a few moments.",
+    });
   }
 });
 
