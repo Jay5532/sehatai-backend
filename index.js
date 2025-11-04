@@ -1,72 +1,35 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import OpenAI from "openai";
-import Groq from "groq-sdk";
+import fetch from "node-fetch";
 
 dotenv.config();
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const port = 5000;
-
-// Initialize both clients
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 app.get("/", (req, res) => {
   res.send("✅ SehatAI backend is live and reachable!");
 });
 
-
+// POST /chat endpoint
 app.post("/chat", async (req, res) => {
   try {
     const { messages, language } = req.body;
 
-    // Try OpenAI first
-    try {
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: `You are SehatAI, a bilingual (Urdu & English) AI fitness coach.
-            Respond naturally in ${language === "ur" ? "Urdu" : "English"}.
-            Be friendly, motivational, and provide expert guidance.`,
-          },
-          ...messages,
-        ],
-      });
+    // simple debug to confirm it’s receiving
+    console.log("🧠 Incoming chat:", messages, language);
 
-      return res.json({ reply: completion.choices[0].message.content });
-    } catch (openaiError) {
-      console.warn("⚠️ OpenAI failed, switching to Groq:", openaiError.message);
-
-      // Use Groq fallback
-      const completion = await groq.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          {
-            role: "system",
-            content: `You are SehatAI, a bilingual (Urdu & English) AI fitness coach.
-            Respond naturally in ${language === "ur" ? "Urdu" : "English"}.
-            Be friendly, motivational, and provide expert guidance.`,
-          },
-          ...messages,
-        ],
-      });
-
-      return res.json({ reply: completion.choices[0].message.content });
-    }
-  } catch (error) {
-    console.error("🚨 SehatAI backend error:", error);
-    res.status(500).json({
-      reply:
-        "⚠️ SehatAI is temporarily offline. Please try again in a few moments.",
+    // send a dummy reply for now (you can plug Groq/OpenAI later)
+    res.json({
+      reply: `SehatAI says hello! You said: "${messages[0].content}"`,
     });
+  } catch (error) {
+    console.error("Chat error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-app.listen(port, () =>
-  console.log(`✅ SehatAI backend running on port ${port}`)
-);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
