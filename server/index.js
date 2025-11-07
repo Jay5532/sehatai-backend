@@ -32,7 +32,7 @@ app.post("/chat", async (req, res) => {
     }
 
     const completion = await groq.chat.completions.create({
-      model: "llama3-8b-8192",
+      model: "llama-3.3-70b-versatile",
       messages: [
         { role: "system", content: systemPrompt },
         ...messages,
@@ -78,3 +78,4 @@ app.post("/generate-meal-plan", async (req, res) => {
 // ✅ Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 SehatAI backend running on port ${PORT}`));
+
