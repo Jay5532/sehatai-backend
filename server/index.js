@@ -75,6 +75,8 @@ app.post("/generate-meal-plan", async (req, res) => {
   }
 });
 
-app.listen(port, () =>
-  console.log(`✅ SehatAI backend running on port ${port}`)
-);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`✅ SehatAI backend running on port ${PORT}`);
+});
+
