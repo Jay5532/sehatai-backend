@@ -74,6 +74,36 @@ app.post("/generate-meal-plan", async (req, res) => {
     });
   }
 });
+//✅ Generate workout plan endpoint
+app.post("/generate-workout-plan", async (req, res) => {
+  const { muscleGroup, language } = req.body;
+
+  try {
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        {
+          role: "system",
+          content: `You are SehatAI, a bilingual AI fitness coach. Respond in ${
+            language === "ur" ? "Urdu" : "English"
+          }. Provide an effective workout plan for the selected muscle group, including exercises, sets, and reps.`,
+        },
+        {
+          role: "user",
+          content: `Create a ${muscleGroup} workout plan.`,
+        },
+      ],
+    });
+
+    const reply = completion.choices[0]?.message?.content || "⚠️ No response from AI.";
+    res.json({ plan: reply });
+  } catch (error) {
+    console.error("Workout Plan Error:", error);
+    res.status(500).json({
+      error: "Failed to generate workout plan. Please try again later.",
+    });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
